@@ -1,13 +1,18 @@
 {
     "compilerOptions": {
       "rootDirs": ["src" ,"custom-types.d.ts"],
+      "module": "NodeNext",
+      "moduleResolution": "nodenext",
+      "baseUrl": "src",
       "outDir": "dist",
-      "lib": ["es2020"],
-      "target": "es2020",
-      "module": "Node16",
-      "moduleResolution": "Node16",
-      "esModuleInterop": true,
-      "types": ["node"]
+      "noImplicitAny": true,
+      "sourceMap": true,
+      // "lib": ["es2020"],
+      // "target": "es2020",
+      // "esModuleInterop": true,
+      // "noEmit": true,
+      // "allowImportingTsExtensions" :true,
+      // "types": ["node"]
     },
-    "include": ["src"]
+    "include": ["src/**/*"]
   }
