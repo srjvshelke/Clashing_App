@@ -17,9 +17,9 @@ mongobconnect().then(() => {
 // });
 const PORT = process.env.PORT || 7000;
 
-// app.get("/", (req: Request, res: Response) => {
-//     return res.send("hey i am suraj");
-// })
+app.get("/", (req: Request, res: Response) => {
+    return res.send("hey i am suraj");
+})
 
 
 app.listen(PORT, () => {
