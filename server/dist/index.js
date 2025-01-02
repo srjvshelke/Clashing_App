@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 7000;
 //     res.send("hey i am suraj");
 // })
 app.get("/", async (req, res) => {
-    res.render("welcome");
+    res.render("emails/welcome");
 });
 app.listen(PORT, () => {
     console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
