@@ -5,7 +5,8 @@ import * as path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import { dirname } from "path";
-
+import ejs from "ejs";
+import { sendmail } from "./lib/mail.js";
 const app = express();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -36,7 +37,12 @@ const PORT = process.env.PORT || 7000;
 //     res.send("hey i am suraj");
 // })
 app.get("/", async (req: Request, res: Response) => {
-    res.render("emails/welcome");
+    const html = await ejs.renderFile(__dirname + `/views/emails/welcome.ejs`,{name:'suraj shelke'});
+   console.log(html);
+   
+    await sendmail('henori5776@evnft.com',"testuing smtp",html);
+    return res.json({msg:"email send succefully"});
+    // return res.render("emails/welcome",{name:'suraj shelke'});
 });
 
 app.listen(PORT, () => {
