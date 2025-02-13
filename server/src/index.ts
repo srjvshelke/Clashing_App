@@ -1,12 +1,14 @@
 import express, { Request, Response } from "express";
 import "dotenv/config";
-// import { mongobconnect } from "../src/lib/db.ts";
+// import { mongobconnect } from "./lib/db.js";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import { dirname } from "path";
 import ejs from 'ejs';
 import { sendMail } from "./lib/mail.js";
+
+import Routes from "./routes/index.js" ;
 const app = express();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -18,6 +20,9 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "./views"));
 
+
+//routes
+app.use(Routes)
 
 mongoose.Promise = Promise;
 // mongobconnect().then(() => {
@@ -41,7 +46,7 @@ app.get("/", async (req: Request, res: Response) => {
         __dirname + `/views/emails/welcome.ejs`,{name:"suraj"}
       );
     //   await sendMail("xenopav840@prorsd.com","email testing",html);
-    await emailQueue.add(emailQueueName,{to:"xenopav840@prorsd.com",subject :"queue email testing",body:html})
+    // await emailQueue.add(emailQueueName,{to:"xenopav840@prorsd.com",subject :"queue email testing",body:html})
       res.send({msg:"email send succefully"})
     // res.render("emails/welcome",{name:"suraj"});
 });

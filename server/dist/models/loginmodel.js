@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 const loginmodel = new mongoose.Schema({
-    Name: {
+    name: {
         type: String,
         require: true
     },
-    Username: {
+    email: {
         type: String,
         require: true
     },
-    Password: {
+    password: {
         type: String,
         require: true
     },
-    Confirm_Password: {
+    confirm_password: {
         type: String,
         require: true
     },
