@@ -16,5 +16,21 @@ const loginmodel = new mongoose.Schema({
         type: String,
         require: true
     },
+    password_reset_token: {
+        type: String,
+    },
+    token_send_at: {
+        type: Date
+    },
+    email_verified_at: {
+        type: Date
+    },
+    email_verify_token: {
+        type: String,
+    },
+    created_at: {
+        type: Date,
+    },
+    Clash: []
 });
 export const register = mongoose.models.login || mongoose.model("register", loginmodel);

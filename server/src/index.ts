@@ -42,13 +42,13 @@ const PORT = process.env.PORT || 7000;
 //     res.send("hey i am suraj");
 // })
 app.get("/", async (req: Request, res: Response) => {
-    const html = await ejs.renderFile(
-        __dirname + `/views/emails/welcome.ejs`,{name:"suraj"}
-      );
+    // const html = await ejs.renderFile(
+    //     __dirname + `/views/emails/welcome.ejs`,{name:"suraj"}
+    //   );
     //   await sendMail("xenopav840@prorsd.com","email testing",html);
     // await emailQueue.add(emailQueueName,{to:"xenopav840@prorsd.com",subject :"queue email testing",body:html})
-      res.send({msg:"email send succefully"})
-    // res.render("emails/welcome",{name:"suraj"});
+    //   res.send({msg:"email send succefully"})
+    res.render("emails/welcome",{name:"suraj"});
 });
 
 

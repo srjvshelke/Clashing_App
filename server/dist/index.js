@@ -4,7 +4,6 @@ import "dotenv/config";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
-import ejs from 'ejs';
 import Routes from "./routes/index.js";
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,11 +30,13 @@ const PORT = process.env.PORT || 7000;
 //     res.send("hey i am suraj");
 // })
 app.get("/", async (req, res) => {
-    const html = await ejs.renderFile(__dirname + `/views/emails/welcome.ejs`, { name: "suraj" });
+    // const html = await ejs.renderFile(
+    //     __dirname + `/views/emails/welcome.ejs`,{name:"suraj"}
+    //   );
     //   await sendMail("xenopav840@prorsd.com","email testing",html);
     // await emailQueue.add(emailQueueName,{to:"xenopav840@prorsd.com",subject :"queue email testing",body:html})
-    res.send({ msg: "email send succefully" });
-    // res.render("emails/welcome",{name:"suraj"});
+    //   res.send({msg:"email send succefully"})
+    res.render("emails/welcome", { name: "suraj" });
 });
 // * Set Queue
 import "./jobs/index.js";

@@ -1,11 +1,8 @@
 // import { supportedMimes } from "./config/filesystem.js";
-// import { v4 as uuidv4 } from "uuid";
-// import fs from "fs";
-// import { UploadedFile } from "express-fileupload";
-// import ejs from "ejs";
-// import { fileURLToPath } from "url";
-// import * as path from "path";
-// import moment from "moment";
+import { v4 as uuidv4 } from "uuid";
+import ejs from "ejs";
+import { fileURLToPath } from "url";
+import * as path from "path";
 export const formatError = (error) => {
     let errors = {};
     error.errors?.map((issue) => {
@@ -24,9 +21,9 @@ export const formatError = (error) => {
 // export const bytesToMb = (bytes) => {
 //   return bytes / (1024 * 1024);
 // };
-// export const generateRandomNum = () => {
-//   return uuidv4();
-// };
+export const generateRandomNum = () => {
+    return uuidv4();
+};
 // export const removeImage = (imageName: string) => {
 //   const path = process.cwd() + "/public/images/" + imageName;
 //   if (fs.existsSync(path)) {
@@ -42,14 +39,11 @@ export const formatError = (error) => {
 //   });
 //   return imageName;
 // };
-// export const renderEmailEjs = async (fileName: string, payload: any) => {
-//   const __dirname = path.dirname(fileURLToPath(import.meta.url));
-//   const html = await ejs.renderFile(
-//     __dirname + `/views/emails/${fileName}.ejs`,
-//     payload
-//   );
-//   return html;
-// };
+export const renderEmailEjs = async (fileName, payload) => {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const html = await ejs.renderFile(__dirname + `/views/emails/${fileName}.ejs`, payload);
+    return html;
+};
 // export const checkDateHourDifference = (date: Date | string): number => {
 //   const now = moment();
 //   const tokenSentAt = moment(date);
