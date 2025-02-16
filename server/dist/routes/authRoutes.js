@@ -36,7 +36,7 @@ router.post('/register', async (req, res) => {
         await emailQueue.add(emailQueueName, {
             to: payload.email,
             subject: "Please verify your email Clash",
-            html: html,
+            body: html,
         });
         Object.assign(payload, { email_verify_token: token });
         await register.create(payload);
@@ -56,6 +56,4 @@ router.post('/register', async (req, res) => {
         }
     }
 });
-// APP_URL = http://localhost:4000
-// CLIENT_URL = http://localhost:3000
 export default router;
