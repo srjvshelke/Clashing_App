@@ -33,6 +33,7 @@ router.post('/register', async (req, res) => {
             name: payload.name,
             url: url,
         });
+        console.log(url);
         await emailQueue.add(emailQueueName, {
             to: payload.email,
             subject: "Please verify your email Clash",
