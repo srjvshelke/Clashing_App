@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import "dotenv/config";
+import cors from "cors";
+
 // import { mongobconnect } from "./lib/db.js";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -15,6 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 // * Set View engine
 app.set("view engine", "ejs");

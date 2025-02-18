@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 interface User {
-  username: string;
+  name: string;
   token: string;
 }
 
@@ -17,13 +17,20 @@ const initialState: AuthState = {
   loading: false,
   error: null,
 };
-
+const config = {
+  headers: { "Content-Type": "multipart/form-data" },
+};
 // Async thunk for user registration
 export const registerUser = createAsyncThunk(
   'auth/registerUser',
-  async (userData: { username: string; password: string }, { rejectWithValue }) => {
+  async (userData: { name: string, email: string, password: string, confirm_password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
+
+      console.log(userData);
+      
+      const response = await axios.post('http://localhost:4000/api/auth/register', userData);
+      console.log(response);
+
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);
@@ -34,9 +41,9 @@ export const registerUser = createAsyncThunk(
 // Async thunk for user login
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
-  async (credentials: { username: string; password: string }, { rejectWithValue }) => {
+  async (credentials: { name: string, email: string, password: string, confirm_password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/signin', credentials);
+      const response = await axios.post('/api/auth/login', credentials,config);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response.data);

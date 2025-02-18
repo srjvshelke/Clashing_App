@@ -13,7 +13,7 @@ router.post('/register', async (req: Request, res: Response) => {
   try {
     const body = req.body;
     const payload = registerSchema.parse(body);
-    // console.log(payload);
+    console.log(payload);
 
     let user = await register.findOne({
       email: payload.email
@@ -56,6 +56,9 @@ router.post('/register', async (req: Request, res: Response) => {
 
 
   } catch (error) {
+    console.log(req.body);
+    
+    
     console.log("The error is ", error);
     if (error instanceof ZodError) {
       const errors = formatError(error);
