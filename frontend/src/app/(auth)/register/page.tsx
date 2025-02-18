@@ -13,7 +13,7 @@ import { registerUser } from '@/redux/features/auth/authSlice';
 export default  function register() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirm_password: '' });
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, error } = useSelector((state: RootState) => state.auth);
+  const { user,loading, error } = useSelector((state: RootState) => state.auth);
 // 
   let name, value;
 
@@ -81,7 +81,7 @@ export default  function register() {
                 {loading ? 'Registering...' : 'Register'}
               </Button>
               {/* <Button className='w-full'></Button> */}
-              {/* {error && <p>{error}</p>} */}
+              {error && <p>{error}</p>}
             </div>
           </form>
         </div>
