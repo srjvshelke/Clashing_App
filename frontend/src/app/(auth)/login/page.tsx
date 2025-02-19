@@ -1,10 +1,67 @@
+'use client';
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
-import React from 'react'
 
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/redux/store';
+import { loginUser } from '@/redux/features/auth/authSlice';
+import { toast } from "sonner";
+
+
+interface loginFormData {
+    email: string;
+    password: string;
+}
 export default function page() {
+    const [formData, setFormData] = useState<loginFormData>({
+        email: '',
+        password: ''
+    });
+
+    const dispatch = useDispatch<AppDispatch>();
+    const { user, loading, msg, status, error } = useSelector((state: RootState) => state.auth);
+
+
+    // Handle input change
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    // Handle form submission
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!!formData.email || !formData.password) {
+            toast.error("All fields are required.");
+            return;
+        }
+
+        // if (formData.password !== formData.confirm_password) {
+        //   toast.error("Passwords do not match.");
+        //   return;
+        // }
+
+        dispatch(loginUser(formData));
+    };
+    useEffect(() => {
+        if (status === 500) {
+            toast.error(msg);
+        } else if (status === 200) {
+            toast.success(msg);
+            // signIn("credentials", {
+            // email: user?.email,
+            // password: user?.password,
+            // redirect: true,
+            // callbackUrl: "/dashboard",
+            // });
+        }
+    }, [user, loading, msg, status, error]);
+
     return (
         <div className="flex justify-center items-center h-screen ">
             <div className="w-[550px] shadow-md rounded-xl py-5 px-10 bg-white">
@@ -14,22 +71,32 @@ export default function page() {
                 <h1 className="text-3xl font-bold">Login</h1>
                 <p>Welcome back</p>
 
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="mt-4">
                         <Label htmlFor="email">Email</Label>
-                        <Input id='email' type='email' placeholder="Enter your email..." name="email" />
-                        {/* <span className="text-red-400">{state.errors?.email}</span> */}
+                        <Input id='email' type='email' placeholder="Enter your email..." name="email"  value={formData.email}
+              onChange={handleChange}  />
+                        {typeof error === 'object' && 'name' in error && error.email && (
+                            <span className="text-red-400">{error.email}</span>
+                        )}
                     </div>
                     <div className="mt-4">
                         <Label htmlFor="password">Password</Label>
-                        <Input id="password" type='password' placeholder="Enter your password..." name="password" />
-                        {/* <span className="text-red-400">{state.errors?.email}</span> */}
+                        <Input id="password" type='password' placeholder="Enter your password..." name="password"    
+                          value={formData.password}
+                          onChange={handleChange}
+                          />
+                        {typeof error === 'object' && 'name' in error && error.password && (
+                            <span className="text-red-400">{error.password}</span>
+                        )}
                         <div className="text-right font-bold">
                             <Link href="/forgot-password">Forgot Password?</Link>
                         </div>
                     </div>
                     <div className='mt-4'>
-                        <Button className='w-full'>Submit</Button>
+                        <Button className='w-full' type="submit" disabled={loading}>
+                            {loading ? 'logging...' : 'login'}
+                        </Button>
                     </div>
                 </form>
 
