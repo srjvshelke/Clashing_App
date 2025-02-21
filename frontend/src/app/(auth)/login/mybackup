@@ -5,25 +5,27 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
 import { signIn } from "next-auth/react";
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
 import { loginUser } from '@/redux/features/auth/authSlice';
 import { toast } from "sonner";
 
-interface LoginFormData {
+
+interface loginFormData {
     email: string;
     password: string;
 }
-
-export default function LoginPage() {
-    const [formData, setFormData] = useState<LoginFormData>({
+export default function page() {
+    const [formData, setFormData] = useState<loginFormData>({
         email: '',
         password: ''
     });
 
     const dispatch = useDispatch<AppDispatch>();
     const { user, loading, msg, status, error } = useSelector((state: RootState) => state.auth);
+
 
     // Handle input change
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,40 +42,36 @@ export default function LoginPage() {
             return;
         }
 
+        // if (formData.password !== formData.confirm_password) {
+        //   toast.error("Passwords do not match.");
+        //   return;
+        // }
+
         dispatch(loginUser(formData));
     };
-
     useEffect(() => {
         if (status === 500) {
             toast.error(msg);
         } else if (status === 200) {
             toast.success(msg);
-
-            // Ensure user is defined before signing in
-            // if (user && "email" in user) {
-            //     signIn("credentials", {
-            //       email: user.email,
-            //       password: formData.password,
-            //       redirect: true,
-            //       callbackUrl: "/Dashboard",
-            //     });
-            //   }
-
             signIn("credentials", {
-                email: user?.email,
-                password: user?.password,
-                redirect: true,
-                callbackUrl: "/dashboard",
-              });
-              
-
-            // Reset form after successful login
-            setFormData({ email: '', password: '' });
-        }
-    }, [user, status, msg]);
+            email: user?.email,
+            password: user?.password,
+            redirect: true,
+            callbackUrl: "/Dashboard",
+            });
+        
+        
+            setFormData (
+                {
+                email: '',
+                password: ''
+              }
+              )}
+    }, [user, loading, msg, status, error]);
 
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-screen ">
             <div className="w-[550px] shadow-md rounded-xl py-5 px-10 bg-white">
                 <h1 className="text-4xl text-center font-extrabold bg-gradient-to-r from-pink-400 to-purple-500 text-transparent bg-clip-text">
                     Clash
@@ -84,42 +82,54 @@ export default function LoginPage() {
                 <form onSubmit={handleSubmit}>
                     <div className="mt-4">
                         <Label htmlFor="email">Email</Label>
-                        <Input 
-                            id="email" 
-                            type="email" 
-                            placeholder="Enter your email..." 
-                            name="email" 
-                            value={formData.email}
-                            onChange={handleChange}  
-                        />
-                        {error?.email && <span className="text-red-400">{error.email}</span>}
+                        <Input id='email' type='email' placeholder="Enter your email..." name="email"  value={formData.email}
+              onChange={handleChange}  />
+                        {typeof error === 'object' && 'email' in error && error.email && (
+                            <span className="text-red-400">{error.email}</span>
+                        )}
                     </div>
                     <div className="mt-4">
                         <Label htmlFor="password">Password</Label>
-                        <Input 
-                            id="password" 
-                            type="password" 
-                            placeholder="Enter your password..." 
-                            name="password"    
-                            value={formData.password}
-                            onChange={handleChange}
-                        />
-                        {error?.password && <span className="text-red-400">{error.password}</span>}
+                        <Input id="password" type='password' placeholder="Enter your password..." name="password"    
+                          value={formData.password}
+                          onChange={handleChange}
+                          />
+                        {typeof error === 'object' && 'password' in error && error.password && (
+                            <span className="text-red-400">{error.password}</span>
+                        )}
                         <div className="text-right font-bold">
                             <Link href="/forgot-password">Forgot Password?</Link>
                         </div>
                     </div>
-                    <div className="mt-4">
-                        <Button className="w-full" type="submit" disabled={loading}>
-                            {loading ? 'Logging in...' : 'Login'}
+                    <div className='mt-4'>
+                        <Button className='w-full' type="submit" disabled={loading}>
+                            {loading ? 'logging...' : 'login'}
                         </Button>
                     </div>
                 </form>
 
                 <p className="text-center mt-2">
-                    Don't have an account? <strong><Link href="/register">Register</Link></strong>
+                    Don't have an account ?{" "}
+                    <strong>
+                        <Link href="/register">Register</Link>
+                    </strong>
                 </p>
+
+
+
             </div>
+
         </div>
-    );
+
+    )
 }
+
+
+
+// 
+// .env.local
+// NEXTAUTH_URL=http://localhost:3000
+// NEXTAUTH_SECRET=das232%^$%%asdvhd98989
+
+// NEXT_PUBLIC_BACKEND_URL=http://localhost:4000
+// NEXT_PUBLIC_APP_URL=http://localhost:3000

@@ -1,9 +1,13 @@
+import { LOGIN_URL, REGISTER_URL } from '@/lib/apiEndPoints';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from "axios";
 
 // User interface
 interface User {
+  id?: string;
   name: string;
+  email: string; 
+  password: string;
   token: string;
 }
 
@@ -46,7 +50,7 @@ export const registerUser = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await axios.post('http://localhost:4000/api/auth/register', userData, config);
+      const response = await axios.post(REGISTER_URL, userData, config);
       return {
         status: 200,
         message: "Account created successfully! Please check your email to verify your account.",
@@ -77,10 +81,13 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/login', credentials, config);
+      
+      const response = await axios.post(LOGIN_URL, credentials, config);
+      console.log(` response`);
+      
       return {
         status: 200,
-        message: "user login successfully.",
+        message: "Credentials matched loging you shortly!",
         error: {},
         data: response.data,
       };
@@ -94,6 +101,8 @@ export const loginUser = createAsyncThunk(
           });
         }
       }
+      
+
       return rejectWithValue({
         status: 500,
         message: "Login failed. Please try again later!",
