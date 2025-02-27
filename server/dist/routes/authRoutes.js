@@ -6,6 +6,8 @@ import { ZodError } from "zod";
 import bcrypt from "bcrypt";
 import { emailQueue, emailQueueName } from "../jobs/EmailQueue.js";
 import jwt from "jsonwebtoken";
+import authMiddleware from "../middleware/AuthMiddleware.js";
+import { testQueue, testQueueName } from "../jobs/TestQueue.js";
 const router = Router();
 router.post('/register', async (req, res) => {
     try {
@@ -123,6 +125,11 @@ router.post("/login", async (req, res) => {
                 .json({ error: "Something went wrong.please try again!", data: error });
         }
     }
+});
+router.get("/user", authMiddleware, async (req, res) => {
+    const user = req.user;
+    await testQueue.add(testQueueName, user);
+    return res.json({ message: "Fetched", user });
 });
 export default router;
 // @ -0,0 +1,22 @@

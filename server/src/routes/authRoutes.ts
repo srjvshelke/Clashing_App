@@ -6,6 +6,8 @@ import { ZodError } from "zod";
 import bcrypt from "bcrypt";
 import { emailQueue, emailQueueName } from "../jobs/EmailQueue.js";
 import jwt from "jsonwebtoken";
+import authMiddleware from "../middleware/AuthMiddleware.js";
+import { testQueue, testQueueName } from "../jobs/TestQueue.js";
 
 const router = Router();
 type JWTPayload = {
@@ -98,6 +100,7 @@ router.post("/login", async (req: Request, res: Response) => {
           email: "No user found with this email.",
         },
       });
+
     }
 
     if (!user.email_verified_at) {
@@ -140,12 +143,9 @@ router.post("/login", async (req: Request, res: Response) => {
       },
     }
     console.log(resf);
-
     return res.json(resf);
   } catch (error) {
     console.log(req.body);
-
-
     console.log("The error is ", error);
     if (error instanceof ZodError) {
       const errors = formatError(error);
@@ -158,6 +158,12 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
   }
+});
+
+router.get("/user", authMiddleware, async (req: Request, res: Response) => {
+  const user = req.user;
+  await testQueue.add(testQueueName, user);
+  return res.json({ message: "Fetched", user });
 });
 
 

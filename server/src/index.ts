@@ -34,7 +34,7 @@ mongoose.Promise = Promise;
 // }).catch((error) => {
 //     console.log(`mongo error => ${error}`);
 // })
-mongoose.connect(process.env.connectionStr).then(() => {
+mongoose.connect(process.env.connectionStr as string).then(() => {
     console.log("mongodb connected");
 }).catch((error) => {
     console.log(`mongo error => ${error}`);
