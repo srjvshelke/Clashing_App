@@ -8,6 +8,7 @@ import { emailQueue, emailQueueName } from "../jobs/EmailQueue.js";
 import jwt from "jsonwebtoken";
 import authMiddleware from "../middleware/AuthMiddleware.js";
 import { testQueue, testQueueName } from "../jobs/TestQueue.js";
+import { authLimiter } from "../lib/rateLimit.js";
 const router = Router();
 router.post('/register', async (req, res) => {
     try {
@@ -88,7 +89,7 @@ router.post("/login", async (req, res) => {
         console.log(isPasswordValid);
         if (!isPasswordValid) {
             console.log('inside2');
-            return res.status(422).json({ errors: { email: "Invalid Credentials." } });
+            return res.status(422).json({ errors: { email: "Invalid Credentials.", password: "Invalid Credentials." } });
         }
         const jwtPayload = {
             id: user._id.toString(),
@@ -123,6 +124,54 @@ router.post("/login", async (req, res) => {
             res
                 .status(500)
                 .json({ error: "Something went wrong.please try again!", data: error });
+        }
+    }
+});
+router.post("/check/login", authLimiter, async (req, res) => {
+    try {
+        const body = req.body;
+        const payload = loginSchema.parse(body);
+        // * Check if user exist
+        let user = await register.findOne({ email: payload.email });
+        if (!user) {
+            return res.status(422).json({
+                errors: {
+                    email: "No user found with this email.",
+                },
+            });
+        }
+        // * Check email verified or not
+        if (!user.email_verified_at) {
+            return res.status(422).json({
+                errors: {
+                    email: "Email is not verified yet.please check your email and verify your email.",
+                },
+            });
+        }
+        // Check password
+        if (!bcrypt.compareSync(payload.password, user.password)) {
+            return res.status(422).json({
+                errors: {
+                    email: "Invalid Credentials.",
+                },
+            });
+        }
+        return res.json({
+            message: "Logged in successfully!",
+            data: null,
+        });
+    }
+    catch (error) {
+        if (error instanceof ZodError) {
+            const errors = formatError(error);
+            res.status(422).json({ message: "Invalid login data", errors });
+        }
+        else {
+            // logger.error({ type: "Auth Error", body: error });
+            res.status(500).json({
+                error: "Something went wrong.please try again!",
+                data: error,
+            });
         }
     }
 });

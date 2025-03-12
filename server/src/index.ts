@@ -51,7 +51,8 @@ app.get("/", async (req: Request, res: Response) => {
     //   await sendMail("nocateb901@shouxs.com","email testing",html);
     // await emailQueue.add(emailQueueName,{to:"xenopav840@prorsd.com",subject :"queue email testing",body:html})
     //   res.send({msg:"email send succefully"})
-    res.render("emails/welcome",{name:"suraj"})
+    res.render("emails/welcome",{name:"suraj"}) ;
+    
 });
 
 

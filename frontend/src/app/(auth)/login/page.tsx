@@ -35,10 +35,10 @@ export default function LoginPage() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.email || !formData.password) {
-            toast.error("All fields are required.");
-            return;
-        }
+        // if (!formData.email || !formData.password) {
+        //     toast.error("All fields are required.");
+        //     return;
+        // }
 
         dispatch(loginUser(formData));
     };
@@ -86,7 +86,7 @@ export default function LoginPage() {
                         <Label htmlFor="email">Email</Label>
                         <Input 
                             id="email" 
-                            type="email" 
+                            type="text" 
                             placeholder="Enter your email..." 
                             name="email" 
                             value={formData.email}

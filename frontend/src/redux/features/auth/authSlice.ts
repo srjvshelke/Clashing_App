@@ -1,4 +1,4 @@
-import { LOGIN_URL, REGISTER_URL } from '@/lib/apiEndPoints';
+import { CHECK_CREDENTIALS_URL, LOGIN_URL, REGISTER_URL } from '@/lib/apiEndPoints';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from "axios";
 
@@ -82,7 +82,7 @@ export const loginUser = createAsyncThunk(
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
       
-      const response = await axios.post(LOGIN_URL, credentials, config);
+      const response = await axios.post(CHECK_CREDENTIALS_URL, credentials, config);
       console.log(` response`);
       
       return {

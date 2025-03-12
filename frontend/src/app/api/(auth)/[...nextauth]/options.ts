@@ -41,6 +41,8 @@ export const authOptions: AuthOptions = {
       session.user = token.user as CustomUser;
       return session;
     },
+
+    //
   },
   providers: [
     Credentials({

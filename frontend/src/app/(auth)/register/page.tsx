@@ -35,7 +35,7 @@ export default function Register() {
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e:React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.password || !formData.confirm_password) {
