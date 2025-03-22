@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import ejs from "ejs";
 import { fileURLToPath } from "url";
 import * as path from "path";
+import moment from "moment";
 export const formatError = (error) => {
     let errors = {};
     error.errors?.map((issue) => {
@@ -44,10 +45,10 @@ export const renderEmailEjs = async (fileName, payload) => {
     const html = await ejs.renderFile(__dirname + `/views/emails/${fileName}.ejs`, payload);
     return html;
 };
-// export const checkDateHourDifference = (date: Date | string): number => {
-//   const now = moment();
-//   const tokenSentAt = moment(date);
-//   const difference = moment.duration(now.diff(tokenSentAt));
-//   const hoursDiff = difference.asHours();
-//   return hoursDiff;
-// };
+export const checkDateHourDifference = (date) => {
+    const now = moment();
+    const tokenSentAt = moment(date);
+    const difference = moment.duration(now.diff(tokenSentAt));
+    const hoursDiff = difference.asHours();
+    return hoursDiff;
+};

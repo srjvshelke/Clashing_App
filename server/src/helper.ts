@@ -62,10 +62,10 @@ export const renderEmailEjs = async (fileName: string, payload: any):Promise<str
   return html;
 };
 
-// export const checkDateHourDifference = (date: Date | string): number => {
-//   const now = moment();
-//   const tokenSentAt = moment(date);
-//   const difference = moment.duration(now.diff(tokenSentAt));
-//   const hoursDiff = difference.asHours();
-//   return hoursDiff;
-// };
+export const checkDateHourDifference = (date: Date | string): number => {
+  const now = moment();
+  const tokenSentAt = moment(date);
+  const difference = moment.duration(now.diff(tokenSentAt));
+  const hoursDiff = difference.asHours();
+  return hoursDiff;
+};

@@ -1,7 +1,7 @@
 import { Router, Response, Request } from "express";
-import { loginSchema, registerSchema } from "../validations/authValidation.js";
+import { forgetPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from "../validations/authValidation.js";
 import { register } from "../models/loginmodel.js";
-import { formatError, generateRandomNum, renderEmailEjs } from "../helper.js";
+import { checkDateHourDifference, formatError, generateRandomNum, renderEmailEjs } from "../helper.js";
 import { ZodError } from "zod";
 import bcrypt from "bcrypt";
 import { emailQueue, emailQueueName } from "../jobs/EmailQueue.js";
@@ -106,12 +106,12 @@ router.post("/login", async (req: Request, res: Response) => {
 
     if (!user.email_verified_at) {
       console.log('inside1');
-
       return res.status(422).json({
         errors: {
           email: "Email is not verified yet. Please check your email and verify it.",
         },
       });
+
     }
 
     const isPasswordValid = await bcrypt.compare(payload.password, user.password);
@@ -119,8 +119,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
     if (!isPasswordValid) {
       console.log('inside2');
-
-      return res.status(422).json({ errors: { email: "Invalid Credentials." , password: "Invalid Credentials." } });
+      return res.status(422).json({ errors: { email: "Invalid Credentials.", password: "Invalid Credentials." } });
     }
 
     const jwtPayload: JWTPayload = {
@@ -163,13 +162,16 @@ router.post("/login", async (req: Request, res: Response) => {
 
 router.post(
   "/check/login",
-  authLimiter,
+  // authLimiter,
   async (req: Request, res: Response) => {
     try {
       const body = req.body;
       const payload = loginSchema.parse(body);
+
       // * Check if user exist
-      let user =  await register.findOne({ email: payload.email });
+      let user = await register.findOne({ email: payload.email });
+      console.log(user);
+      
       if (!user) {
         return res.status(422).json({
           errors: {
@@ -177,6 +179,7 @@ router.post(
           },
         });
       }
+
       // * Check email verified or not
       if (!user.email_verified_at) {
         return res.status(422).json({
@@ -186,6 +189,7 @@ router.post(
           },
         });
       }
+
       // Check password
       if (!bcrypt.compareSync(payload.password, user.password)) {
         return res.status(422).json({
@@ -194,21 +198,31 @@ router.post(
           },
         });
       }
-      return res.json({
+
+      let resf = {
         message: "Logged in successfully!",
-        data: null,
-      });
+        data: {
+          id: user._id,
+          email: user.email,
+          name: user.name
+        },
+      }
+      return res.json(resf);
     } catch (error) {
+      console.log(req.body);
+  
+  
+      console.log("The error is ", error);
       if (error instanceof ZodError) {
         const errors = formatError(error);
-        res.status(422).json({ message: "Invalid login data", errors });
+        res.status(422).json({ message: "Invalid data", errors });
       } else {
-        // logger.error({ type: "Auth Error", body: error });
-        res.status(500).json({
-          error: "Something went wrong.please try again!",
-          data: error,
-        });
+        // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+        res
+          .status(500)
+          .json({ error: "Something went wrong.please try again!", data: error });
       }
+  
     }
   }
 );
@@ -218,6 +232,148 @@ router.get("/user", authMiddleware, async (req: Request, res: Response) => {
   await testQueue.add(testQueueName, user);
   return res.json({ message: "Fetched", user });
 });
+
+// * Forget password
+router.post(
+  "/forget-password",
+  authLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const body = req.body;
+      const payload = forgetPasswordSchema.parse(body);
+      const user = await register.findOne({ email: payload.email });
+      if (!user) {
+        return res.status(422).json({
+          message: "Invalid data",
+          errors: {
+            email: "No Account found with this email!",
+          },
+        });
+      }
+
+      const id = generateRandomNum();
+      const salt = await bcrypt.genSalt(10);
+      const token = await bcrypt.hash(id, salt);
+
+      await register.updateOne(
+        { email: payload.email },
+        {
+          $set: {
+            password_reset_token: token,
+            token_send_at: new Date().toISOString()
+          }
+        },
+        { upsert: true }
+      );
+
+      const url = `${process.env.CLIENT_URL}/reset-password?email=${payload.email}&token=${token}`;
+      const html = await renderEmailEjs("forget-password", {
+        name: user.name,
+        url: url,
+      });
+      await emailQueue.add(emailQueueName, {
+        to: payload.email,
+        subject: "Forgot Password",
+        html: html,
+      });
+
+      return res.json({
+        message: "Email sent successfully!! please check your email.",
+      });
+    } catch (error) {
+      console.log(req.body);
+  
+  
+      console.log("The error is ", error);
+      if (error instanceof ZodError) {
+        const errors = formatError(error);
+        res.status(422).json({ message: "Invalid data", errors });
+      } else {
+        // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+        res
+          .status(500)
+          .json({ error: "Something went wrong.please try again!", data: error });
+      }
+  
+    }
+  }
+);
+
+
+
+// *Reset Password routes
+router.post(
+  "/reset-password",
+  authLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      const body = req.body;
+      const payload = resetPasswordSchema.parse(body);
+      const user = await register.findOne({ email: payload.email});
+
+      if (!user) {
+        return res.status(422).json({
+          errors: {
+            email: "No Account found with this email.",
+          },
+        });
+      }
+
+      // * Check token
+      if (payload.token !== user.password_reset_token) {
+        return res.status(422).json({
+          errors: {
+            email: "Please make sure you are using correct url.",
+          },
+        });
+      }
+
+      const hoursDiff = checkDateHourDifference(user.token_send_at);
+      
+      if (hoursDiff > 2) {
+        return res.status(422).json({
+          errors: {
+            email:
+              "Password Reset token got expire.please send new token to reset password.",
+          },
+        });
+      }
+
+      // * Update the password
+      const salt = await bcrypt.genSalt(10);
+      const newPass = await bcrypt.hash(payload.password, salt);
+
+      await register.updateOne(
+        { email: payload.email },
+        {
+          $set: {
+            password: newPass,
+            password_reset_token: null,
+            token_send_at: null,
+          }
+        },
+        { upsert: true }
+      );
+
+      return res.json({
+        message: "Password reset successfully! please try to login now.",
+      });
+    } catch (error) {
+      console.log(req.body);
+      console.log("The error is ", error);
+      if (error instanceof ZodError) {
+        const errors = formatError(error);
+        res.status(422).json({ message: "Invalid data", errors });
+      } else {
+        // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+        res
+          .status(500)
+          .json({ error: "Something went wrong.please try again!", data: error });
+      }
+  
+    }
+  }
+);
 
 
 

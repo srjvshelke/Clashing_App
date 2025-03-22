@@ -6,7 +6,7 @@ import axios, { AxiosError } from "axios";
 interface User {
   id?: string;
   name: string;
-  email: string; 
+  email: string;
   password: string;
   token: string;
 }
@@ -25,7 +25,7 @@ interface AuthState {
   loading: boolean;
   msg: string;
   status: number;
-  error: ErrorType ;
+  error: ErrorType;
 }
 
 // Initial state
@@ -81,10 +81,11 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (credentials: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      
-      const response = await axios.post(CHECK_CREDENTIALS_URL, credentials, config);
-      console.log(` response`);
-      
+
+      var response = await axios.post(CHECK_CREDENTIALS_URL, credentials, config);
+      // response = response.json();
+      console.log(` response ${response}`);
+
       return {
         status: 200,
         message: "Credentials matched loging you shortly!",
@@ -101,7 +102,7 @@ export const loginUser = createAsyncThunk(
           });
         }
       }
-      
+
 
       return rejectWithValue({
         status: 500,
@@ -133,7 +134,7 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.data;
+        state.user = action.payload.data.data;
         state.msg = action.payload.message;
         state.status = action.payload.status;
         state.error = {};
@@ -152,7 +153,9 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.data;
+        state.user = action.payload.data.data;
+        console.log(action.payload.data);
+        
         state.msg = action.payload.message;
         state.status = action.payload.status;
         state.error = {};

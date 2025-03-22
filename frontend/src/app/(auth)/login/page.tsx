@@ -16,6 +16,8 @@ interface LoginFormData {
     password: string;
 }
 
+//
+
 export default function LoginPage() {
     const [formData, setFormData] = useState<LoginFormData>({
         email: '',
@@ -50,6 +52,7 @@ export default function LoginPage() {
             toast.success(msg);
 
             // Ensure user is defined before signing in
+
             // if (user && "email" in user) {
             //     signIn("credentials", {
             //       email: user.email,
@@ -59,13 +62,24 @@ export default function LoginPage() {
             //     });
             //   }
 
+console.log(user, loading, msg, status, error );
+
             signIn("credentials", {
-                email: user?.email,
-                password: user?.password,
+                email: formData?.email,
+                password: formData?.password,
                 redirect: true,
-                callbackUrl: "/dashboard",
-              });
-              
+                callbackUrl: "/Dashboard",
+            }).then((response) => {
+                if (response?.error) {
+                    toast.error("Invalid credentials. Please try again.");
+                } else {
+                    window.location.href = "/Dashboard"; // Manually redirect after success
+                }
+            });
+
+
+
+            console.log(`${formData?.email} and ${formData.password}`);
 
             // Reset form after successful login
             setFormData({ email: '', password: '' });
@@ -84,23 +98,23 @@ export default function LoginPage() {
                 <form onSubmit={handleSubmit}>
                     <div className="mt-4">
                         <Label htmlFor="email">Email</Label>
-                        <Input 
-                            id="email" 
-                            type="text" 
-                            placeholder="Enter your email..." 
-                            name="email" 
+                        <Input
+                            id="email"
+                            type="text"
+                            placeholder="Enter your email..."
+                            name="email"
                             value={formData.email}
-                            onChange={handleChange}  
+                            onChange={handleChange}
                         />
                         {error?.email && <span className="text-red-400">{error.email}</span>}
                     </div>
                     <div className="mt-4">
                         <Label htmlFor="password">Password</Label>
-                        <Input 
-                            id="password" 
-                            type="password" 
-                            placeholder="Enter your password..." 
-                            name="password"    
+                        <Input
+                            id="password"
+                            type="password"
+                            placeholder="Enter your password..."
+                            name="password"
                             value={formData.password}
                             onChange={handleChange}
                         />
@@ -116,6 +130,8 @@ export default function LoginPage() {
                     </div>
                 </form>
 
+                {/* */}
+
                 <p className="text-center mt-2">
                     Don't have an account? <strong><Link href="/register">Register</Link></strong>
                 </p>
@@ -123,3 +139,4 @@ export default function LoginPage() {
         </div>
     );
 }
+    // 
