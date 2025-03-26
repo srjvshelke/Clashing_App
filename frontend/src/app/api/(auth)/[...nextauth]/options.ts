@@ -61,38 +61,67 @@ export const authOptions: AuthOptions = {
           // type: "email",
           // placeholder: "Enter your email",
         },
-        password: { 
+        password: {
           // label: "Password", type: "password"
-         },
+        },
       },
 
 
-      async authorize(credentials, req) {
-        try {
-          const { data } = await axios.post(LOGIN_URL, credentials);
+      // async authorize(credentials, req) {
+      //   try {
+      //     const { data } = await axios.post(LOGIN_URL, credentials);
 
-          if (!data?.data) {
+      //     if (!data?.data) {
+      //       console.error("No user data returned from API.");
+      //       throw new Error("Invalid credentials");
+      //       return null;
+      //     }
+
+      //     // Ensure all required user fields exist
+      //     console.log(data);
+
+      //     return {
+      //       id: data.data.id || null,
+      //       name: data.data.name || "User",
+      //       email: data.data.email,
+      //       token: data.data.token || null, // Ensure token exists
+      //     };
+
+      //   } catch (error) {
+      //     console.error("Login error:", error);
+      //     throw new Error("Login failed. Please check your credentials.");
+      //   }
+      // }
+
+      async authorize(credentials) {
+        try {
+          const res = await fetch(LOGIN_URL, {
+            method: 'POST',
+            body: JSON.stringify(credentials),
+            headers: { 'Content-Type': 'application/json' },
+          });
+
+          if (res.ok) {
             console.error("No user data returned from API.");
             throw new Error("Invalid credentials");
             return null;
           }
+          const data = await res.json();
+          if (data) {
+            return {
+              id: data.data.id || null,
+              name: data.data.name || "User",
+              email: data.data.email,
+              token: data.data.token || null, // Ensure token exists
+            };
+          }; // Return user if valid
 
-          // Ensure all required user fields exist
-          console.log(data);
-          
-          return {
-            id: data.data.id || null,
-            name: data.data.name || "User",
-            email: data.data.email,
-            token: data.data.token || null, // Ensure token exists
-          };
 
         } catch (error) {
           console.error("Login error:", error);
           throw new Error("Login failed. Please check your credentials.");
         }
-      }
-
+      },
 
 
     }),
