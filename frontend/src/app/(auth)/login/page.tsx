@@ -1,16 +1,17 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
-import { toast } from 'sonner'; // Toast notifications
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/redux/store';
-import { loginUser } from '@/redux/features/auth/authSlice'; // Redux login action
+import { loginUser } from '@/redux/features/auth/authSlice';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';  // Correct for Next.js 13+ App Router
+
 
 interface LoginFormData {
   email: string;
@@ -19,17 +20,17 @@ interface LoginFormData {
 
 export default function LoginPage() {
   const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
+  const { user, loading, msg, status, error } = useSelector((state: RootState) => state.auth);
+  const router = useRouter();  // Initialize Next.js router
 
-  const { user, status, msg, error } = useSelector((state: RootState) => state.auth);
-
+  // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -38,52 +39,55 @@ export default function LoginPage() {
       return;
     }
 
-    setLoading(true);
+    const reduxResponse = await dispatch(loginUser(formData));
 
-    try {
-      // Step 1: Perform Redux login operation first
-      const reduxResponse = await dispatch(loginUser(formData)).unwrap();
+  };
 
-      if (reduxResponse.status === 200) {
-        toast.success(reduxResponse.message);
+  const handleLogin = async () => {
+    if (status === 500) {
+      toast.error(msg);
+    } else if (status === 200) {
+      toast.success(msg);
 
-        // Step 2: If Redux login succeeds, sign in with NextAuth
-        const nextAuthResponse = await signIn('credentials', {
+      try {
+        const response = await signIn('credentials', {
           email: formData.email,
           password: formData.password,
-          redirect: false,
+          redirect: true,  
+          callbackUrl: "/Dashboard"
         });
 
-        if (nextAuthResponse?.error) {
-          toast.error('NextAuth login failed. Please check your credentials.');
-        } else {
-          toast.success(msg);
-          router.push('/Dashboard'); // Redirect to Dashboard after successful login
-        }
-      } else {
-        toast.error(msg);
+
+        // if (response?.error) {
+        //   toast.error('Invalid credentials. Please try again.');
+        // } else {
+        //   router.push('/Dashboard');  // Redirect after successful login
+        // }
+
+        setFormData({ email: '', password: '' });  // Reset form after login
+      } catch (error) {
+        console.error("Login failed:", error);
+        toast.error("Something went wrong. Please try again later.");
       }
-    } catch (err) {
-      console.error('Error during login:', err);
-      toast.error(msg);
-    } finally {
-      setLoading(false); // Reset loading state
     }
   };
 
-  // Handle any Redux-based global notifications (optional)
   useEffect(() => {
-    if (status === 500) toast.error(msg);
-  }, [status, msg]);
+    if (status === 200 || status === 500) {
+      handleLogin();
+    }
+  }, [status]); // Check based on status only to avoid unnecessary re-renders.
+  // Dependencies array
+
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="w-[500px] p-8 shadow-md rounded-xl bg-white">
+      <div className="w-[550px] shadow-md rounded-xl py-5 px-10 bg-white">
         <h1 className="text-4xl text-center font-extrabold bg-gradient-to-r from-pink-400 to-purple-500 text-transparent bg-clip-text">
           Clash
         </h1>
-        <h2 className="text-3xl font-bold">Login</h2>
-        <p className="text-gray-500 mb-4">Welcome back! Please login to your account.</p>
+        <h1 className="text-3xl font-bold">Login</h1>
+        <p>Welcome back</p>
 
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
@@ -91,42 +95,37 @@ export default function LoginPage() {
             <Input
               id="email"
               type="text"
+              placeholder="Enter your email..."
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email..."
-              required
             />
+            {error?.email && <span className="text-red-400">{error.email}</span>}
           </div>
-
           <div className="mt-4">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
               type="password"
+              placeholder="Enter your password..."
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password..."
-              required
             />
-            <div className="text-right mt-2">
-              <Link href="/forgot-password" className="text-sm font-bold text-blue-600 hover:underline">
-                Forgot Password?
-              </Link>
+            {error?.password && <span className="text-red-400">{error.password}</span>}
+            <div className="text-right font-bold">
+              <Link href="/forgot-password">Forgot Password?</Link>
             </div>
           </div>
-
-          <Button className="w-full mt-6" type="submit" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </Button>
+          <div className="mt-4">
+            <Button className="w-full" type="submit" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </Button>
+          </div>
         </form>
 
-        <p className="text-center mt-4">
-          Don’t have an account?{' '}
-          <Link href="/register" className="font-bold text-blue-600 hover:underline">
-            Register
-          </Link>
+        <p className="text-center mt-2">
+          Don't have an account? <strong><Link href="/register">Register</Link></strong>
         </p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { AuthOptions, ISODateString, User } from "next-auth";
+import { AuthOptions, ISODateString } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import axios from "axios";
 import Credentials from "next-auth/providers/credentials";
@@ -19,112 +19,82 @@ export type CustomUser = {
 
 export const authOptions: AuthOptions = {
   pages: {
-    signIn: "/login",
+    signIn: "/login", // Custom login page
   },
   session: {
-    strategy: "jwt", // Use JWT-based sessions
+    strategy: "jwt", // Using JWT-based sessions
   },
 
   callbacks: {
     async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
       if (user) {
-        token.user = user;
+        token.user = user; // Save user data in JWT token
       }
       console.log("JWT token:", token);
       return token;
     },
+
     async session({
       session,
       token,
-      user,
     }: {
       session: CustomSession;
       token: JWT;
-      user: CustomUser;
     }) {
-      console.log("Token in session callback:", token); // Log token to inspect structure
-      session.user = token.user as CustomUser;
+      console.log("Token in session callback:", token);
+      session.user = token.user as CustomUser; // Assign user from token to session
       console.log("Session data:", session);
       return session;
     },
-
-    //
   },
+
   providers: [
     Credentials({
-      name: "Welcome Back",
+      name: "Login with Email",
       type: "credentials",
-
       credentials: {
         email: {
-          // label: "Email",
-          // type: "email",
-          // placeholder: "Enter your email",
+          // label: "Email", type: "email", placeholder: "Enter your email" 
+
         },
         password: {
-          // label: "Password", type: "password"
+          // label: "Password", type: "password", placeholder: "Enter your password" 
         },
       },
 
-
-      // async authorize(credentials, req) {
-      //   try {
-      //     const { data } = await axios.post(LOGIN_URL, credentials);
-
-      //     if (!data?.data) {
-      //       console.error("No user data returned from API.");
-      //       throw new Error("Invalid credentials");
-      //       return null;
-      //     }
-
-      //     // Ensure all required user fields exist
-      //     console.log(data);
-
-      //     return {
-      //       id: data.data.id || null,
-      //       name: data.data.name || "User",
-      //       email: data.data.email,
-      //       token: data.data.token || null, // Ensure token exists
-      //     };
-
-      //   } catch (error) {
-      //     console.error("Login error:", error);
-      //     throw new Error("Login failed. Please check your credentials.");
-      //   }
-      // }
-
       async authorize(credentials) {
         try {
+          // Call your login API with the user's credentials
           const res = await fetch(LOGIN_URL, {
-            method: 'POST',
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(credentials),
-            headers: { 'Content-Type': 'application/json' },
           });
 
           if (res.ok) {
-            console.error("No user data returned from API.");
-            throw new Error("Invalid credentials");
-            return null;
+            const data = await res.json(); // Parse the response
+            if (data?.data) {
+              console.log("User data from API:", data.data);
+
+              // Return user data, including token
+              return {
+                id: data.data.id || null,
+                name: data.data.name || "User",
+                email: data.data.email || null,
+                token: data.data.token || null,
+              };
+              // throw new Error("Invalid credentials"); // Handle error if status is not OK
+            } else {
+              return null;
+            }
+          } else {
+            throw new Error('Invalid login credentials');
           }
-          const data = await res.json();
-          if (data) {
-            return {
-              id: data.data.id || null,
-              name: data.data.name || "User",
-              email: data.data.email,
-              token: data.data.token || null, // Ensure token exists
-            };
-          }; // Return user if valid
-
-
         } catch (error) {
           console.error("Login error:", error);
           throw new Error("Login failed. Please check your credentials.");
         }
       },
-
-
     }),
-    // ...add more providers here
   ],
 };
