@@ -1,8 +1,8 @@
-import { AuthOptions, ISODateString } from "next-auth";
+import { AuthOptions, ISODateString, NextAuthOptions, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
-import axios from "axios";
-import Credentials from "next-auth/providers/credentials";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { LOGIN_URL } from "@/lib/apiEndPoints";
+import axios from "axios";
 
 export type CustomSession = {
   user?: CustomUser;
@@ -17,84 +17,67 @@ export type CustomUser = {
   token?: string | null;
 };
 
-export const authOptions: AuthOptions = {
-  pages: {
-    signIn: "/login", // Custom login page
-  },
-  session: {
-    strategy: "jwt", // Using JWT-based sessions
-  },
-
-  callbacks: {
-    async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
-      if (user) {
-        token.user = user; // Save user data in JWT token
-      }
-      console.log("JWT token:", token);
-      return token;
-    },
-
-    async session({
-      session,
-      token,
-    }: {
-      session: CustomSession;
-      token: JWT;
-    }) {
-      console.log("Token in session callback:", token);
-      session.user = token.user as CustomUser; // Assign user from token to session
-      console.log("Session data:", session);
-      return session;
-    },
-  },
-
+export const authOptions: NextAuthOptions = {
+  
   providers: [
-    Credentials({
-      name: "Login with Email",
-      type: "credentials",
+    CredentialsProvider({
+      name: "Credentials",
       credentials: {
-        email: {
-          // label: "Email", type: "email", placeholder: "Enter your email" 
-
-        },
-        password: {
-          // label: "Password", type: "password", placeholder: "Enter your password" 
-        },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
-
-      async authorize(credentials) {
+      async authorize(credentials: any): Promise<any> {
         try {
-          // Call your login API with the user's credentials
-          const res = await fetch(LOGIN_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(credentials),
-          });
-
-          if (res.ok) {
-            const data = await res.json(); // Parse the response
-            if (data?.data) {
-              console.log("User data from API:", data.data);
-
-              // Return user data, including token
-              return {
-                id: data.data.id || null,
-                name: data.data.name || "User",
-                email: data.data.email || null,
-                token: data.data.token || null,
-              };
-              // throw new Error("Invalid credentials"); // Handle error if status is not OK
-            } else {
-              return null;
-            }
-          } else {
-            throw new Error('Invalid login credentials');
+          const { data } = await axios.post(LOGIN_URL, credentials);
+          const user = data?.data;
+          // if (!res.ok) throw new Error("Invalid credentials");
+          // const data = await res.json();
+          console.log(data + "inside auth");
+          if (user) {
+            return {
+              id: data.data.id,
+              name: data.data.name,
+              email: data.data.email,
+              token: data.data.token, // Attach token from backend
+            };
           }
+          return null;
         } catch (error) {
           console.error("Login error:", error);
-          throw new Error("Login failed. Please check your credentials.");
+          throw new Error("Login failed.");
+          
         }
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
+
+  session: {
+    strategy: "jwt",
+  },
+
+  secret :process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
+      if (user) {
+        token.user = user; // Attach user data to token
+      }
+      return token;
+    },
+    async session({
+      session,
+      token,
+      user,
+    }: {
+      session: CustomSession;
+      token: JWT;
+      user: User;
+    }) {
+      session.user = token.user as CustomUser;
+      return session;
+    },
+  },
+
 };

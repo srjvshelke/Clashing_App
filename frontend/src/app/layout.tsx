@@ -30,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-50 antialiased`}
       >
-        <ClientSessionProvider> <Providers>{children}</Providers></ClientSessionProvider>
+       <ClientSessionProvider>  <Providers>{children}</Providers> </ClientSessionProvider>
 
       
 

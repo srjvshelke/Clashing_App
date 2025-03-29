@@ -1,8 +1,5 @@
-import NextAuth from "next-auth";
+import NextAuth from "next-auth/next";
 import { authOptions } from "./options";
 
 const handler = NextAuth(authOptions);
-
-// Only export POST handler to avoid GET errors during login
-export { handler as POST };
-
+export { handler as GET, handler as POST };

@@ -5,7 +5,7 @@ import VerifyRoutes from "./verifyRoutes.js";
 
 const router = Router();
 
-router.use('/api/auth',AuthRoutes) ;
+router.use('/auth',AuthRoutes) ;
 router.use("/", VerifyRoutes);
 
 export default router;

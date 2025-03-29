@@ -2,8 +2,8 @@
 
 export default function Dashboard() {
   return (
-   <div>
- hello
-   </div>
+    <div>
+      hello
+    </div>
   );
 }
