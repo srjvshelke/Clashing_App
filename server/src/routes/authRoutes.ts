@@ -162,7 +162,7 @@ router.post("/login", async (req: Request, res: Response) => {
 
 router.post(
   "/check/login",
-  // authLimiter,
+  authLimiter,
   async (req: Request, res: Response) => {
     try {
       const body = req.body;

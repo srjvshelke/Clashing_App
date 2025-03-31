@@ -53,30 +53,30 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
 
-//   session: {
-//     strategy: "jwt",
-//   },
+  session: {
+    strategy: "jwt",
+  },
 
-//   secret :process.env.NEXTAUTH_SECRET,
-//   callbacks: {
-//     async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
-//       if (user) {
-//         token.user = user; // Attach user data to token
-//       }
-//       return token;
-//     },
-//     async session({
-//       session,
-//       token,
-//       user,
-//     }: {
-//       session: CustomSession;
-//       token: JWT;
-//       user: User;
-//     }) {
-//       session.user = token.user as CustomUser;
-//       return session;
-//     },
-//   },
+  secret :process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
+      if (user) {
+        token.user = user; // Attach user data to token
+      }
+      return token;
+    },
+    async session({
+      session,
+      token,
+      user,
+    }: {
+      session: CustomSession;
+      token: JWT;
+      user: User;
+    }) {
+      session.user = token.user as CustomUser;
+      return session;
+    },
+  },
 
 };

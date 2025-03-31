@@ -16,6 +16,7 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "./views"));
 //routes
 app.use(Routes);
+app.use(applimiter);
 mongoose.Promise = Promise;
 // mongobconnect().then(() => {
 //     console.log("mongodb connected");

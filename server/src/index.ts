@@ -25,7 +25,8 @@ app.set("views", path.resolve(__dirname, "./views"));
 
 
 //routes
-app.use(Routes)
+app.use(Routes);
+app.use(applimiter)
 
 mongoose.Promise = Promise;
 // mongobconnect().then(() => {
@@ -60,6 +61,7 @@ app.get("/", async (req: Request, res: Response) => {
 // * Set Queue
 import "./jobs/index.js";
 import { emailQueue, emailQueueName } from "./jobs/EmailQueue.js";
+import { authLimiter } from "./lib/rateLimit.js";
 app.listen(PORT, () => {
     console.log(`SERVER IS RUNNING ON PORT ${PORT}`);
 })
