@@ -1,51 +1,43 @@
-// // import { withAuth } from "next-auth/middleware";
-// // import { NextRequest,NextResponse } from "next/server";
-// export {default} from "next-auth/middleware";
-// // // export default withAuth({
-// // //   pages: {
-// // //     signIn: "/auth/signin", // Redirect if not authenticated
-// // //   },
-// // //   callbacks: {
-// // //     authorized: ({ token, req }: { token: any; req: NextRequest }) => {
-// // //       const protectedRoutes = ["/dashboard", "/settings"];
-// // //       const isProtected = protectedRoutes.some((path) => req.nextUrl.pathname.startsWith(path));
+// import { NextResponse } from 'next/server'
+// import type { NextRequest } from 'next/server'
+ 
 
-// // //       // Allow access if the route is not protected or if the user has a valid session token
-// // //       return !isProtected || !!token;
-// // //     },
-// // //   },
-// // // });
-// // export async function middleware(request:NextRequest) {
-// //    return NextResponse.redirect(new URL('/',request.url));
-// //   };
-// // // Apply middleware to specific routes
-// // export const config = {
-// //   matcher: ["/login", "/","/Dashboard/:path*"], // Protect specific routes
-// // };
+// export function middleware(request: NextRequest) {
+//   const path = request.nextUrl.pathname
 
+//   const isPublicPath = path === '/login' || path === '/register' || path === '/verifyemail'
 
+//   const token = request.cookies.get('token')?.value || ''
 
+//   if(isPublicPath && token) {
+//     return NextResponse.redirect(new URL('/Dashboard', request.nextUrl))
+//   }
+
+//   if (!isPublicPath && !token) {
+//     return NextResponse.redirect(new URL('/login', request.nextUrl))
+//   }
+    
+// }
+
+ 
+// // See "Matching Paths" below to learn more
+// export const config = {
+//   matcher: [
+//     '/',
+//     '/profile',
+//     '/login',
+//     '/register',
+//     // '/verifyemail'
+//   ]
+// }
 
 
 import { withAuth } from "next-auth/middleware";
-import type { NextRequest } from "next/server";
 
 export default withAuth({
   pages: {
-    signIn: "/auth/signin", // Redirect if not authenticated
-  },
-  callbacks: {
-    authorized: ({ token, req }: { token: any; req: NextRequest }) => {
-      const protectedRoutes = ["/dashboard", "/settings"];
-      const isProtected = protectedRoutes.some((path) => req.nextUrl.pathname.startsWith(path));
-
-      // Allow access if the route is not protected or if the user has a valid session token
-      return !isProtected || !!token;
-    },
+    signIn: "/login", // Redirect to login page if not authenticated
   },
 });
 
-// Apply middleware to specific routes
-export const config = {
-  matcher: ["/dashboard/:path*", "/settings/:path*"], // Protect specific routes
-};
+export const config = { matcher: ["/dashboard", "/", "/clash/items/:path*"] };

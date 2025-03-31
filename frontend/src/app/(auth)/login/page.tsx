@@ -5,17 +5,17 @@ import { getServerSession } from "next-auth";
 import { signIn } from 'next-auth/react';
 import React, {useEffect, useState } from 'react';
 import Login from '@/components/auth/Login';
-import { authOptions } from '@/app/api/(auth)/[...nextauth]/options';
+// import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 // import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
 import { redirect } from "next/navigation";
 
 
 export default async function LoginPage() {
-  const session = await getServerSession(authOptions);
-  if (session !== null) {
-    redirect("/Dashboard");
-  }
+  // const session = await getServerSession(authOptions);
+  // if (session !== null) {
+  //   redirect("/Dashboard");
+  // }
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-[550px] shadow-md rounded-xl py-5 px-10 bg-white">

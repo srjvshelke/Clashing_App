@@ -1,9 +1,8 @@
 import { AuthOptions, ISODateString, NextAuthOptions, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { LOGIN_URL } from "@/lib/apiEndPoints";
 import axios from "axios";
-
+import {LOGIN_URL} from '../../../../lib/apiEndPoints' 
 export type CustomSession = {
   user?: CustomUser;
   expires: ISODateString;
@@ -54,30 +53,30 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
 
-  session: {
-    strategy: "jwt",
-  },
+//   session: {
+//     strategy: "jwt",
+//   },
 
-  secret :process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
-      if (user) {
-        token.user = user; // Attach user data to token
-      }
-      return token;
-    },
-    async session({
-      session,
-      token,
-      user,
-    }: {
-      session: CustomSession;
-      token: JWT;
-      user: User;
-    }) {
-      session.user = token.user as CustomUser;
-      return session;
-    },
-  },
+//   secret :process.env.NEXTAUTH_SECRET,
+//   callbacks: {
+//     async jwt({ token, user }: { token: JWT; user: CustomUser | null }) {
+//       if (user) {
+//         token.user = user; // Attach user data to token
+//       }
+//       return token;
+//     },
+//     async session({
+//       session,
+//       token,
+//       user,
+//     }: {
+//       session: CustomSession;
+//       token: JWT;
+//       user: User;
+//     }) {
+//       session.user = token.user as CustomUser;
+//       return session;
+//     },
+//   },
 
 };

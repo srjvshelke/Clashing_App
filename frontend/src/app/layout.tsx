@@ -27,15 +27,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-slate-50 antialiased`}
-      >
-       <ClientSessionProvider>  <Providers>{children}</Providers> </ClientSessionProvider>
-
-      
-
-       <Toaster richColors position="top-right" />
-
+      <body className={`${geistSans.variable} ${geistMono.variable} bg-slate-50 antialiased`}>
+        <Providers>
+          <ClientSessionProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+          </ClientSessionProvider>
+        </Providers>
       </body>
     </html>
   );
