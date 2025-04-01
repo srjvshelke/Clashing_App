@@ -62,7 +62,7 @@ router.post('/register', async (req, res) => {
         }
     }
 });
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
     try {
         const { body } = req;
         const payload = loginSchema.parse(body);

@@ -84,7 +84,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
 
 
-router.post("/login", async (req: Request, res: Response) => {
+router.post("/login", authLimiter, async (req: Request, res: Response) => {
   try {
     const { body } = req;
     const payload = loginSchema.parse(body);
