@@ -1,4 +1,5 @@
 
+import ForgotPassword from "@/components/auth/ForgotPassword";
 import React from "react";
 
 export default function forgotPassword() {
@@ -15,7 +16,7 @@ export default function forgotPassword() {
             will send you the reset email.
           </p>
         </div>
-        {/* <ForgotPassword/> */}
+        <ForgotPassword/>
         {/* <p className="text-center mt-2">
         Don't have an account ?{" "}
         <strong>

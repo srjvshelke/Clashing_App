@@ -1,4 +1,4 @@
-import { CHECK_CREDENTIALS_URL, LOGIN_URL, REGISTER_URL } from '@/lib/apiEndPoints';
+import { CHECK_CREDENTIALS_URL, FORGOT_PASSWORD_URL, LOGIN_URL, REGISTER_URL, RESET_PASSWORD_URL } from '@/lib/apiEndPoints';
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from "axios";
 
@@ -113,6 +113,78 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+//
+export const forgotPasswordAction = createAsyncThunk(
+  'auth/forgotPasswordAction',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      var response = await axios.post(FORGOT_PASSWORD_URL, {
+        email: email,
+      }, config);
+      return {
+        status: 200,
+        message: "Email sent successfully!! Please check your email.",
+        error: {},
+        data: response.data,
+      };
+    }
+    catch (error: any) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 422) {
+          return rejectWithValue({
+            status: 422,
+            message: error.response?.data?.message,
+            error: error.response?.data?.errors || {},
+          });
+        }
+      }
+
+
+      return rejectWithValue({
+        status: 500,
+        message: "Something went wrong.please try again!",
+        error: {},
+      });
+    }
+  }
+)
+
+
+export const resetPasswordAction = createAsyncThunk(
+  'auth/resetPasswordAction',
+  async (
+    userData: { email: string; password: string; confirm_password: string; token: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const { data } = await axios.post(RESET_PASSWORD_URL, userData, config);
+      return {
+        status: 200,
+        message: data?.message,
+        error: {},
+        data: data,
+        
+      };
+    }
+    catch (error: any) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 422) {
+          return rejectWithValue({
+            status: 422,
+            message: error.response?.data?.message,
+            error: error.response?.data?.errors || {},
+          });
+        }
+      }
+      return rejectWithValue({
+        status: 500,
+        message: "Something went wrong.please try again!",
+        error: {},
+      });
+    }
+  }
+)
+
 // 🔹 Auth slice
 const authSlice = createSlice({
   name: 'auth',
@@ -155,12 +227,57 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.data.data;
         console.log(action.payload.data);
-        
+
         state.msg = action.payload.message;
         state.status = action.payload.status;
         state.error = {};
       })
       .addCase(loginUser.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.msg = action.payload.message;
+        state.status = action.payload.status;
+        state.error = action.payload.error;
+      })
+
+
+      // forget password User
+      .addCase(forgotPasswordAction.pending, (state) => {
+        state.loading = true;
+        state.error = {};
+      })
+
+      .addCase(forgotPasswordAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data.data;
+        console.log(action.payload.data);
+
+        state.msg = action.payload.message;
+        state.status = action.payload.status;
+        state.error = {};
+      })
+      .addCase(forgotPasswordAction.rejected, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.msg = action.payload.message;
+        state.status = action.payload.status;
+        state.error = action.payload.error;
+      })
+
+      // reset password User
+      .addCase(resetPasswordAction.pending, (state) => {
+        state.loading = true;
+        state.error = {};
+      })
+
+      .addCase(resetPasswordAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.data.data;
+        console.log(action.payload.data);
+        state.msg = action.payload.message;
+        state.status = action.payload.status;
+        state.error = {};
+      })
+
+      .addCase(resetPasswordAction.rejected, (state, action: PayloadAction<any>) => {
         state.loading = false;
         state.msg = action.payload.message;
         state.status = action.payload.status;

@@ -35,7 +35,7 @@ export default function Register() {
   };
 
   // Handle form submission
-  const handleSubmit = (e:React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.email || !formData.password || !formData.confirm_password) {
@@ -53,16 +53,18 @@ export default function Register() {
 
   // Show success/error messages
   useEffect(() => {
-    if (status === 404 ) {
+    if (status === 404) {
       toast.error(msg);
     } else if (status === 200) {
       toast.success(msg);
     }
-    setFormData (
-      {name: '',
-      email: '',
-      password: '',
-      confirm_password: ''}
+    setFormData(
+      {
+        name: '',
+        email: '',
+        password: '',
+        confirm_password: ''
+      }
     )
   }, [status, msg]);
 
@@ -83,7 +85,6 @@ export default function Register() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              
             />
             {typeof error === 'object' && 'name' in error && error.name && (
               <span className="text-red-400">{error.name}</span>
@@ -97,7 +98,7 @@ export default function Register() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              
+
             />
             {typeof error === 'object' && 'email' in error && error.email && (
               <span className="text-red-400">{error.email}</span>
@@ -112,7 +113,7 @@ export default function Register() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              
+
             />
             {typeof error === 'object' && 'password' in error && error.password && (
               <span className="text-red-400">{error.password}</span>
@@ -127,7 +128,7 @@ export default function Register() {
               name="confirm_password"
               value={formData.confirm_password}
               onChange={handleChange}
-              
+
             />
             {typeof error === 'object' && 'confirm_password' in error && error.confirm_password && (
               <span className="text-red-400">{error.confirm_password}</span>

@@ -171,7 +171,7 @@ router.post(
       // * Check if user exist
       let user = await register.findOne({ email: payload.email });
       console.log(user);
-      
+
       if (!user) {
         return res.status(422).json({
           errors: {
@@ -210,8 +210,8 @@ router.post(
       return res.json(resf);
     } catch (error) {
       console.log(req.body);
-  
-  
+
+
       console.log("The error is ", error);
       if (error instanceof ZodError) {
         const errors = formatError(error);
@@ -222,7 +222,7 @@ router.post(
           .status(500)
           .json({ error: "Something went wrong.please try again!", data: error });
       }
-  
+
     }
   }
 );
@@ -263,6 +263,7 @@ router.post(
             token_send_at: new Date().toISOString()
           }
         },
+
         { upsert: true }
       );
 
@@ -271,10 +272,13 @@ router.post(
         name: user.name,
         url: url,
       });
+
+      // console.log("making email" + html);
+
       await emailQueue.add(emailQueueName, {
         to: payload.email,
         subject: "Forgot Password",
-        html: html,
+        body: html,
       });
 
       return res.json({
@@ -282,8 +286,8 @@ router.post(
       });
     } catch (error) {
       console.log(req.body);
-  
-  
+
+
       console.log("The error is ", error);
       if (error instanceof ZodError) {
         const errors = formatError(error);
@@ -294,7 +298,7 @@ router.post(
           .status(500)
           .json({ error: "Something went wrong.please try again!", data: error });
       }
-  
+
     }
   }
 );
@@ -309,7 +313,7 @@ router.post(
     try {
       const body = req.body;
       const payload = resetPasswordSchema.parse(body);
-      const user = await register.findOne({ email: payload.email});
+      const user = await register.findOne({ email: payload.email });
 
       if (!user) {
         return res.status(422).json({
@@ -329,7 +333,7 @@ router.post(
       }
 
       const hoursDiff = checkDateHourDifference(user.token_send_at);
-      
+
       if (hoursDiff > 2) {
         return res.status(422).json({
           errors: {
@@ -370,7 +374,7 @@ router.post(
           .status(500)
           .json({ error: "Something went wrong.please try again!", data: error });
       }
-  
+
     }
   }
 );

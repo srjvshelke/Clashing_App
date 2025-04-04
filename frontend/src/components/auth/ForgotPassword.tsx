@@ -1,35 +1,64 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SubmitButton } from "../common/SubmitBtn";
+import { SubmitButton } from "../SubmitBtn";
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/redux/store';
+
 import { useFormState } from "react-dom";
-import { forgotPasswordAction } from "@/app/actions/authActions";
+// import { forgotPasswordAction } from "@/app/actions/authActions";
 import { toast } from "sonner";
 import Link from "next/link";
-
+import { forgotPasswordAction } from "@/redux/features/auth/authSlice";
+interface LoginFormData {
+  email: string;
+}
 export default function ForgotPassword() {
-  const initialState = {
-    message: "",
-    status: 0,
-    errors: {},
+
+  const [formData, setFormData] = useState<LoginFormData>({ email: '' });
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { user, loading, msg, status, error } = useSelector((state: RootState) => state.auth);
+
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const [state, formAction] = useFormState(forgotPasswordAction, initialState);
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.email) {
+      toast.error('All fields are required.');
+      return;
+    }
+
+    await dispatch(forgotPasswordAction(formData.email));
+  };
+
 
   useEffect(() => {
-    if (state.status === 500) {
-      toast.error(state.message);
-    } else if (state.status === 200) {
-      toast.success(state.message);
+    if (status === 500) {
+      toast.error(msg);
+    } else if (status === 200) {
+      toast.success(msg);
     }
-  }, [state]);
+  }, [formData, msg, user]);
 
   return (
-    <form action={formAction}>
+    <form onSubmit={handleSubmit}>
       <div className="mt-4">
         <Label htmlFor="email">Email</Label>
-        <Input placeholder="Type your email" name="email" />
-        <span className="text-red-400">{state.errors?.email}</span>
+        <Input
+          id="email"
+          type="text"
+          placeholder="Enter your email..."
+          name="email"
+          value={formData.email}
+          onChange={handleChange} />
+        {error?.email && <span className="text-red-400">{error.email}</span>}
       </div>
 
       <div className="mt-4">

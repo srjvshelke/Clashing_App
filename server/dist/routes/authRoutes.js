@@ -215,10 +215,11 @@ router.post("/forget-password", authLimiter, async (req, res) => {
             name: user.name,
             url: url,
         });
+        // console.log("making email" + html);
         await emailQueue.add(emailQueueName, {
             to: payload.email,
             subject: "Forgot Password",
-            html: html,
+            body: html,
         });
         return res.json({
             message: "Email sent successfully!! please check your email.",
