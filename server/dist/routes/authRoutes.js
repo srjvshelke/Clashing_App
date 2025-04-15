@@ -275,6 +275,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
         await register.updateOne({ email: payload.email }, {
             $set: {
                 password: newPass,
+                confirm_password: newPass,
                 password_reset_token: null,
                 token_send_at: null,
             }

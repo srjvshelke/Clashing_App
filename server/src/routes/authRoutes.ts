@@ -346,12 +346,12 @@ router.post(
       // * Update the password
       const salt = await bcrypt.genSalt(10);
       const newPass = await bcrypt.hash(payload.password, salt);
-
       await register.updateOne(
         { email: payload.email },
         {
           $set: {
             password: newPass,
+            confirm_password: newPass,
             password_reset_token: null,
             token_send_at: null,
           }

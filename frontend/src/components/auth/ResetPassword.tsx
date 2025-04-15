@@ -29,9 +29,10 @@ export default function ResetPassword() {
     token: ''
   });
 
+  const sParams = useSearchParams();
+  const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { user, loading, msg, status, error } = useSelector((state: RootState) => state.auth);
-
   // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -42,14 +43,23 @@ export default function ResetPassword() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password || !formData.confirm_password) {
+    const email = sParams.get("email") ?? "";
+    const token = sParams.get("token") ?? "";
+
+    if (!formData.password || !formData.confirm_password) {
       toast.error("All fields are required.");
       return;
     }
-    dispatch(resetPasswordAction(formData));
+
+    const dataToSend = {
+      ...formData,
+      email,
+      token,
+    };
+
+    dispatch(resetPasswordAction(dataToSend));
   };
-  const sParams = useSearchParams();
-  const router = useRouter();
+
   useEffect(() => {
     if (status === 500) {
       toast.error(msg);
@@ -57,7 +67,7 @@ export default function ResetPassword() {
       toast.success(msg);
       var timeOut = setTimeout(() => {
         router.replace("/login");
-      }, 1500);
+      }, 1000);
     }
 
     return () => {
@@ -74,7 +84,6 @@ export default function ResetPassword() {
           placeholder="Type your email"
           name="email"
           readOnly
-          onChange={handleChange}
 
           value={sParams.get("email") ?? ""}
 

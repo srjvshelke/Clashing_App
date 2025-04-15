@@ -127,6 +127,8 @@ export const forgotPasswordAction = createAsyncThunk(
         error: {},
         data: response.data,
       };
+
+      // 
     }
     catch (error: any) {
       if (error instanceof AxiosError) {
@@ -158,6 +160,7 @@ export const resetPasswordAction = createAsyncThunk(
   ) => {
     try {
       const { data } = await axios.post(RESET_PASSWORD_URL, userData, config);
+      console.log(data);
       return {
         status: 200,
         message: data?.message,
@@ -166,6 +169,8 @@ export const resetPasswordAction = createAsyncThunk(
         
       };
     }
+
+    
     catch (error: any) {
       if (error instanceof AxiosError) {
         if (error.response?.status === 422) {
