@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { forgetPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from "../validations/authValidation.js";
-import { register } from "../models/loginmodel.js";
+import { User } from "../models/loginmodel.js";
 import { checkDateHourDifference, formatError, generateRandomNum, renderEmailEjs } from "../helper.js";
 import { ZodError } from "zod";
 import bcrypt from "bcrypt";
@@ -15,7 +15,7 @@ router.post('/register', async (req, res) => {
         const body = req.body;
         const payload = registerSchema.parse(body);
         console.log(payload);
-        let user = await register.findOne({
+        let user = await User.findOne({
             email: payload.email
         });
         console.log(user);
@@ -44,7 +44,7 @@ router.post('/register', async (req, res) => {
             body: html,
         });
         Object.assign(payload, { email_verify_token: token });
-        await register.create(payload);
+        await User.create(payload);
         return res.json({ message: "User created successfully!" });
     }
     catch (error) {
@@ -55,7 +55,7 @@ router.post('/register', async (req, res) => {
             res.status(422).json({ message: "Invalid data", errors });
         }
         else {
-            // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+            // logger.error({ type: "User Error", body: JSON.stringify(error) });
             res
                 .status(500)
                 .json({ error: "Something went wrong.please try again!", data: error });
@@ -66,7 +66,7 @@ router.post("/login", authLimiter, async (req, res) => {
     try {
         const { body } = req;
         const payload = loginSchema.parse(body);
-        const user = await register.findOne({ email: payload.email });
+        const user = await User.findOne({ email: payload.email });
         console.log(user);
         if (!user) {
             console.log("no user");
@@ -120,7 +120,7 @@ router.post("/login", authLimiter, async (req, res) => {
             res.status(422).json({ message: "Invalid data", errors });
         }
         else {
-            // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+            // logger.error({ type: "User Error", body: JSON.stringify(error) });
             res
                 .status(500)
                 .json({ error: "Something went wrong.please try again!", data: error });
@@ -132,7 +132,7 @@ router.post("/check/login", authLimiter, async (req, res) => {
         const body = req.body;
         const payload = loginSchema.parse(body);
         // * Check if user exist
-        let user = await register.findOne({ email: payload.email });
+        let user = await User.findOne({ email: payload.email });
         console.log(user);
         if (!user) {
             return res.status(422).json({
@@ -192,7 +192,7 @@ router.post("/forget-password", authLimiter, async (req, res) => {
     try {
         const body = req.body;
         const payload = forgetPasswordSchema.parse(body);
-        const user = await register.findOne({ email: payload.email });
+        const user = await User.findOne({ email: payload.email });
         if (!user) {
             return res.status(422).json({
                 message: "Invalid data",
@@ -204,7 +204,7 @@ router.post("/forget-password", authLimiter, async (req, res) => {
         const id = generateRandomNum();
         const salt = await bcrypt.genSalt(10);
         const token = await bcrypt.hash(id, salt);
-        await register.updateOne({ email: payload.email }, {
+        await User.updateOne({ email: payload.email }, {
             $set: {
                 password_reset_token: token,
                 token_send_at: new Date().toISOString()
@@ -245,7 +245,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
     try {
         const body = req.body;
         const payload = resetPasswordSchema.parse(body);
-        const user = await register.findOne({ email: payload.email });
+        const user = await User.findOne({ email: payload.email });
         if (!user) {
             return res.status(422).json({
                 errors: {
@@ -272,7 +272,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
         // * Update the password
         const salt = await bcrypt.genSalt(10);
         const newPass = await bcrypt.hash(payload.password, salt);
-        await register.updateOne({ email: payload.email }, {
+        await User.updateOne({ email: payload.email }, {
             $set: {
                 password: newPass,
                 confirm_password: newPass,

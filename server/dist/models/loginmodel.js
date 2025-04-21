@@ -33,4 +33,4 @@ const loginmodel = new mongoose.Schema({
     },
     Clash: []
 });
-export const register = mongoose.models.register || mongoose.model("register", loginmodel);
+export const User = mongoose.models.register || mongoose.model("User", loginmodel);

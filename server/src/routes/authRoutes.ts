@@ -1,6 +1,6 @@
 import { Router, Response, Request } from "express";
 import { forgetPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from "../validations/authValidation.js";
-import { register } from "../models/loginmodel.js";
+import { User } from "../models/loginmodel.js";
 import { checkDateHourDifference, formatError, generateRandomNum, renderEmailEjs } from "../helper.js";
 import { ZodError } from "zod";
 import bcrypt from "bcrypt";
@@ -22,7 +22,7 @@ router.post('/register', async (req: Request, res: Response) => {
     const payload = registerSchema.parse(body);
     console.log(payload);
 
-    let user = await register.findOne({
+    let user = await User.findOne({
       email: payload.email
     })
     console.log(user);
@@ -58,7 +58,7 @@ router.post('/register', async (req: Request, res: Response) => {
     });
     Object.assign(payload, { email_verify_token: token });
 
-    await register.create(payload)
+    await User.create(payload)
     return res.json({ message: "User created successfully!" });
 
 
@@ -71,7 +71,7 @@ router.post('/register', async (req: Request, res: Response) => {
       const errors = formatError(error);
       res.status(422).json({ message: "Invalid data", errors });
     } else {
-      // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+      // logger.error({ type: "User Error", body: JSON.stringify(error) });
       res
         .status(500)
         .json({ error: "Something went wrong.please try again!", data: error });
@@ -89,7 +89,7 @@ router.post("/login", authLimiter, async (req: Request, res: Response) => {
     const { body } = req;
     const payload = loginSchema.parse(body);
 
-    const user = await register.findOne({ email: payload.email });
+    const user = await User.findOne({ email: payload.email });
     console.log(user);
 
     if (!user) {
@@ -151,7 +151,7 @@ router.post("/login", authLimiter, async (req: Request, res: Response) => {
       const errors = formatError(error);
       res.status(422).json({ message: "Invalid data", errors });
     } else {
-      // logger.error({ type: "Register Error", body: JSON.stringify(error) });
+      // logger.error({ type: "User Error", body: JSON.stringify(error) });
       res
         .status(500)
         .json({ error: "Something went wrong.please try again!", data: error });
@@ -169,7 +169,7 @@ router.post(
       const payload = loginSchema.parse(body);
 
       // * Check if user exist
-      let user = await register.findOne({ email: payload.email });
+      let user = await User.findOne({ email: payload.email });
       console.log(user);
 
       if (!user) {
@@ -241,7 +241,7 @@ router.post(
     try {
       const body = req.body;
       const payload = forgetPasswordSchema.parse(body);
-      const user = await register.findOne({ email: payload.email });
+      const user = await User.findOne({ email: payload.email });
       if (!user) {
         return res.status(422).json({
           message: "Invalid data",
@@ -255,7 +255,7 @@ router.post(
       const salt = await bcrypt.genSalt(10);
       const token = await bcrypt.hash(id, salt);
 
-      await register.updateOne(
+      await User.updateOne(
         { email: payload.email },
         {
           $set: {
@@ -313,7 +313,7 @@ router.post(
     try {
       const body = req.body;
       const payload = resetPasswordSchema.parse(body);
-      const user = await register.findOne({ email: payload.email });
+      const user = await User.findOne({ email: payload.email });
 
       if (!user) {
         return res.status(422).json({
@@ -346,7 +346,7 @@ router.post(
       // * Update the password
       const salt = await bcrypt.genSalt(10);
       const newPass = await bcrypt.hash(payload.password, salt);
-      await register.updateOne(
+      await User.updateOne(
         { email: payload.email },
         {
           $set: {

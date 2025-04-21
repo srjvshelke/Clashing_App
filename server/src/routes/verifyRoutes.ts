@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { register } from "../models/loginmodel.js";
+import { User } from "../models/loginmodel.js";
 
 const router = Router();
 
@@ -9,7 +9,7 @@ router.get("/verify-email", async (req: Request, res: Response) => {
   console.log(`email : ${email} ,token:${token}`);
 
   if (email && token) {
-    const user = await register.findOne({
+    const user = await User.findOne({
       email: email
 
     });
@@ -22,7 +22,7 @@ router.get("/verify-email", async (req: Request, res: Response) => {
         return res.redirect("/verify-error");
 
       }
-      await register.updateOne(
+      await User.updateOne(
         { _id: user._id },
         {
           $set: {

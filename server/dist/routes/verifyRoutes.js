@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { register } from "../models/loginmodel.js";
+import { User } from "../models/loginmodel.js";
 const router = Router();
 // * Verify email
 router.get("/verify-email", async (req, res) => {
     const { email, token } = req.query;
     console.log(`email : ${email} ,token:${token}`);
     if (email && token) {
-        const user = await register.findOne({
+        const user = await User.findOne({
             email: email
         });
         console.log(user);
@@ -16,7 +16,7 @@ router.get("/verify-email", async (req, res) => {
                 console.log("inside1");
                 return res.redirect("/verify-error");
             }
-            await register.updateOne({ _id: user._id }, {
+            await User.updateOne({ _id: user._id }, {
                 $set: {
                     email_verified_at: new Date().toISOString(),
                     email_verify_token: null
