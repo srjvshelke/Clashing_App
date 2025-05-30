@@ -63,7 +63,7 @@ router.post('/register', async (req: Request, res: Response) => {
 
 
   } catch (error) {
-    console.log(req.body);
+    // console.log(req.body);
 
 
     console.log("The error is ", error);
@@ -145,7 +145,7 @@ router.post("/login", authLimiter, async (req: Request, res: Response) => {
     console.log(resf);
     return res.json(resf);
   } catch (error) {
-    console.log(req.body);
+    // console.log(req.body);
     console.log("The error is ", error);
     if (error instanceof ZodError) {
       const errors = formatError(error);
@@ -209,7 +209,7 @@ router.post(
       }
       return res.json(resf);
     } catch (error) {
-      console.log(req.body);
+      // console.log(req.body);
 
 
       console.log("The error is ", error);
@@ -285,7 +285,7 @@ router.post(
         message: "Email sent successfully!! please check your email.",
       });
     } catch (error) {
-      console.log(req.body);
+      // console.log(req.body);
 
 
       console.log("The error is ", error);
@@ -363,7 +363,7 @@ router.post(
         message: "Password reset successfully! please try to login now.",
       });
     } catch (error) {
-      console.log(req.body);
+      // console.log(req.body);
       console.log("The error is ", error);
       if (error instanceof ZodError) {
         const errors = formatError(error);

@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
         return res.json({ message: "User created successfully!" });
     }
     catch (error) {
-        console.log(req.body);
+        // console.log(req.body);
         console.log("The error is ", error);
         if (error instanceof ZodError) {
             const errors = formatError(error);
@@ -113,7 +113,7 @@ router.post("/login", authLimiter, async (req, res) => {
         return res.json(resf);
     }
     catch (error) {
-        console.log(req.body);
+        // console.log(req.body);
         console.log("The error is ", error);
         if (error instanceof ZodError) {
             const errors = formatError(error);
@@ -168,7 +168,7 @@ router.post("/check/login", authLimiter, async (req, res) => {
         return res.json(resf);
     }
     catch (error) {
-        console.log(req.body);
+        // console.log(req.body);
         console.log("The error is ", error);
         if (error instanceof ZodError) {
             const errors = formatError(error);
@@ -226,7 +226,7 @@ router.post("/forget-password", authLimiter, async (req, res) => {
         });
     }
     catch (error) {
-        console.log(req.body);
+        // console.log(req.body);
         console.log("The error is ", error);
         if (error instanceof ZodError) {
             const errors = formatError(error);
@@ -285,7 +285,7 @@ router.post("/reset-password", authLimiter, async (req, res) => {
         });
     }
     catch (error) {
-        console.log(req.body);
+        // console.log(req.body);
         console.log("The error is ", error);
         if (error instanceof ZodError) {
             const errors = formatError(error);
