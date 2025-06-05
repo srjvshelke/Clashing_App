@@ -6,5 +6,5 @@ const logger = winston.createLogger({
   format: combine(timestamp(), json()),
   transports: [new winston.transports.File({ filename: "logs.log" })],
 });
-
+ed
 export default logger;

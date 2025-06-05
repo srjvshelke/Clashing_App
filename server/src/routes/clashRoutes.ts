@@ -16,11 +16,10 @@ const router = Router();
 
 router.get("/", authMiddleware, async (req: Request, res: Response) => {
   try {
-    const clashs = await clash.findOne({
-      user_id: req.user?.id
-    })
-      
-    return res.json({ message: "Data Fetched", data: clashs });
+    // const clashs = await clash.findOne({
+    //   user_id: req.user?.id
+    // })
+    return res.json({ message: "Data Fetched", data: "clashs" });
   } catch (error) {
     logger.error({ type: "Clash Post Error", body: error });
     console.log("The error is ", error);

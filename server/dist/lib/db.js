@@ -1,7 +1,9 @@
-// import mongoose from "mongoose";
-// const connectionStr = process.env.connectionStr;
-export {};
-// export  async function mongobconnect() {
-//     return await mongoose.connect(connectionStr);
-// }
-// module.exports  = mongobconnect ;
+import mongoose from "mongoose";
+import autoIncrement from "mongoose-auto-increment";
+const connectionStr = process.env.connectionStr;
+mongoose.Promise = Promise;
+const dbPromise = mongoose.connect(connectionStr).then(() => {
+    console.log("✅ MongoDB connected");
+    autoIncrement.initialize(mongoose.connection);
+});
+export { mongoose, autoIncrement, dbPromise };

@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import autoIncrement from "mongoose-auto-increment";
+import {mongoose,autoIncrement} from "../lib/db.js";
+
 
 const clashCommentSchema = new mongoose.Schema({
   id: { type: Number },
@@ -22,12 +22,12 @@ const clashCommentSchema = new mongoose.Schema({
   }
 });
 
-clashCommentSchema.plugin(autoIncrement.plugin, {
-  model: "ClashComment",
-  field: "id",
-  startAt: 1,
-  incrementBy: 1,
-});
+// clashCommentSchema.plugin(autoIncrement.plugin, {
+//   model: "ClashComment",
+//   field: "id",
+//   startAt: 1,
+//   incrementBy: 1,
+// });
 
 export const ClashComment = mongoose.models.ClashComment || mongoose.model("ClashComment", clashCommentSchema);
 

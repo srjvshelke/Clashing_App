@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-import autoIncrement from "mongoose-auto-increment";
+import { mongoose } from "../lib/db.js";
 const { Schema } = mongoose;
 const clashItemSchema = new Schema({
     id: { type: Number },
@@ -21,10 +20,10 @@ const clashItemSchema = new Schema({
         default: Date.now
     }
 });
-Clashmodel.plugin(autoIncrement.plugin, {
-    model: "ClashItem",
-    field: "id",
-    startAt: 1,
-    incrementBy: 1,
-});
+// clashItemSchema.plugin(autoIncrement.plugin, {
+//   model: "ClashItem",
+//   field: "id",
+//   startAt: 1,
+//   incrementBy: 1,
+// });
 export const clash = mongoose.models.ClashItem || mongoose.model("ClashItem", clashItemSchema);

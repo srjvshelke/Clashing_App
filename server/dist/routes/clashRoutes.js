@@ -1,14 +1,13 @@
 import { Router } from "express";
 import logger from "../lib/logger.js";
-import { clash } from "../models/clashmodel.js";
 import authMiddleware from "../middleware/AuthMiddleware.js";
 const router = Router();
 router.get("/", authMiddleware, async (req, res) => {
     try {
-        const clashs = await clash.findOne({
-            user_id: req.user?.id
-        });
-        return res.json({ message: "Data Fetched", data: clashs });
+        // const clashs = await clash.findOne({
+        //   user_id: req.user?.id
+        // })
+        return res.json({ message: "Data Fetched", data: "clashs" });
     }
     catch (error) {
         logger.error({ type: "Clash Post Error", body: error });

@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-import autoIncrement from "mongoose-auto-increment";
+import { mongoose, autoIncrement } from "../lib/db.js";
 const Clashmodel = new mongoose.Schema({
     // Auto-incrementing integer field (similar to Prisma's id)
     id: { type: Number },
