@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import ejs from 'ejs';
 import { sendMail } from "./lib/mail.js";
+import ExpressFileUpoad from "express-fileupload";
 
 import { dbPromise } from "./lib/db.js";
 import Routes from "./routes/index.js" ;
@@ -24,6 +25,14 @@ app.use(cors());
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "./views"));
 
+
+//upload file 
+app.use(
+  ExpressFileUpoad({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 //routes
 

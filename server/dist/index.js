@@ -3,6 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import ExpressFileUpoad from "express-fileupload";
 import { dbPromise } from "./lib/db.js";
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -13,6 +14,11 @@ app.use(cors());
 // * Set View engine
 app.set("view engine", "ejs");
 app.set("views", path.resolve(__dirname, "./views"));
+//upload file 
+app.use(ExpressFileUpoad({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+}));
 //routes
 // mongobconnect().then(() => {
 //     console.log("mongodb connected");
