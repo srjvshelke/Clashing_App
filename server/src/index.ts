@@ -47,12 +47,12 @@ app.use(
 
 const PORT = process.env.PORT || 7000;
 
-// ✅ WAIT for DB before importing routes or models
+//  WAIT for DB before importing routes or models
 dbPromise
   .then(() => {
-    console.log("🚀 DB is ready — now loading routes");
+    console.log(" DB is ready — now loading routes");
 
-    // ✅ only NOW we import routes (which import models)
+    //  only NOW we import routes (which import models)
     import("./routes/index.js").then(({ default: Routes }) => {
       app.use(Routes);
 

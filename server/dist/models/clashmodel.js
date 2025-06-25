@@ -17,10 +17,11 @@ const Clashmodel = new mongoose.Schema({
     ClashComments: [{ type: mongoose.Schema.Types.Mixed }],
 });
 Clashmodel.index({ expire_at: 1, title: 1 });
-Clashmodel.plugin(autoIncrement.plugin, {
-    model: "Clash",
-    field: "id",
-    startAt: 1,
-    incrementBy: 1,
-});
+// Clashmodel.plugin(autoIncrement.plugin, {
+//   model: "Clash",
+//   field: "id",
+//   startAt: 1,
+//   incrementBy: 1,
+// });
+Clashmodel.plugin(autoIncrement, { inc_field: "id" });
 export const clash = mongoose.models.Clash || mongoose.model("Clash", Clashmodel);

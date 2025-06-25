@@ -1,4 +1,4 @@
-import {mongoose,autoIncrement} from "../lib/db.js";
+import {mongoose,mongooseSequence} from "../lib/db.js";
 
 const Clashmodel = new mongoose.Schema({
   // Auto-incrementing integer field (similar to Prisma's id)
@@ -27,12 +27,15 @@ const Clashmodel = new mongoose.Schema({
 
 Clashmodel.index({ expire_at: 1, title: 1 });
 
-Clashmodel.plugin(autoIncrement.plugin, {
-  model: "Clash",
-  field: "id",
-  startAt: 1,
-  incrementBy: 1,
-});
+// Clashmodel.plugin(mongooseSequence.plugin, {
+//   model: "Clash",
+//   field: "id",
+//   startAt: 1,
+//   incrementBy: 1,
+// });
+
+Clashmodel.plugin(mongooseSequence, { inc_field: "id" });
+
 
 
 export const clash = mongoose.models.Clash || mongoose.model("Clash", Clashmodel);

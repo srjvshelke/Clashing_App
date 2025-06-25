@@ -4,7 +4,6 @@ import { clashSchema } from "../validations/clashValidation.js";
 import {
   formatError,
   imageValidator,
-  removeImage,
   uploadImage,
 } from "../helper.js";
 import logger from "../lib/logger.js";
@@ -14,12 +13,14 @@ import { clash } from "../models/clashmodel.js";
 import authMiddleware from "../middleware/AuthMiddleware.js";
 const router = Router();
 
-router.get("/", authMiddleware, async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
-    // const clashs = await clash.findOne({
-    //   user_id: req.user?.id
-    // })
-    return res.json({ message: "Data Fetched", data: "clashs" });
+    const clashs = await clash.findOne({
+      user_id: req.user?.id
+    })
+    
+    // let user = await clash.findOne({ email: payload.email });
+    return res.json({ message: "Data Fetched", data: clashs });
   } catch (error) {
     logger.error({ type: "Clash Post Error", body: error });
     console.log("The error is ", error);
